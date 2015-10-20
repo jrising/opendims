@@ -16,15 +16,15 @@ namespace openworld {
     GlobalDimensions(string name)
       : Dimensions(name) {
     }
-				
+
     GlobalDimensions(map<Dimensions, double> factors)
       : Dimensions(factors) {
     }
-		
+
     GlobalDimensions(string name, map<Dimensions, double> factors)
       : Dimensions(name, factors) {
     }
-  
+
     static Dimensions& get(string name) {
       if (!initialized) {
         dict = map<string, Dimensions*>();
@@ -33,16 +33,23 @@ namespace openworld {
 
       if (dict.count(name) > 0)
         return *(dict.find(name)->second);
-    
+
       Dimensions* dims = new GlobalDimensions(name);
       dict.insert(make_pair(name, dims));
       return *dims;
     }
-		
+
+    static Dimensions* tryget(string name) {
+      if (initialized && dict.count(name) > 0)
+        return dict.find(name)->second;
+
+      return NULL;
+    }
+
     static Dimensions& add(string name, Dimensions dims) {
       if (dict.count(name) > 0)
         throw runtime_error("GlobalDimension already defined");
-      
+
       Dimensions* newdims = new GlobalDimensions(name, dims.getFactors());
       dict.insert(make_pair(name, newdims));
       return *newdims;

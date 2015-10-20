@@ -17,7 +17,7 @@ namespace openworld {
   static Unit day = GlobalUnit::add("day", hr*24);
   //static Unit month = GlobalUnit::add("month", Depends(theDate, day*365.25/12));
   //static Unit year = GlobalUnit::add("year", Depends(theDate, day*365.25));*/
-  
+
   // space variables
     static Unit m;
   /*static Unit cm = GlobalUnit::add("cm", m/100);
@@ -28,7 +28,7 @@ namespace openworld {
   static IDisposable mi = GlobalUnit::add("mi", ft*5280);*/
 
     static Unit ha;
-		
+
   // mass variables
     static Unit kg;
     static Unit mt;
@@ -37,6 +37,29 @@ namespace openworld {
     static Unit deg;
     /*static Unit rad = GlobalUnit::get("rad");
       static Unit deg = GlobalUnit::add("deg", rad * 180.0 / M_PI);*/
+
+    static Unit* get(string name) {
+      if (name == "none")
+        return &none;
+      if (name == "individuals")
+        return &individuals;
+      if (name == "s")
+        return &s;
+      if (name == "yr")
+        return &yr;
+      if (name == "m")
+        return &m;
+      if (name == "ha")
+        return &ha;
+      if (name == "kg")
+        return &kg;
+      if (name == "mt")
+        return &mt;
+      if (name == "deg")
+        return &deg;
+
+      return NULL;
+    }
   };
 }
 

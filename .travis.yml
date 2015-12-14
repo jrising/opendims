@@ -7,5 +7,4 @@ before_install:
 - echo $LC_ALL
 script: cd test; ./runtests.sh
 os:
-- linux
 - osx

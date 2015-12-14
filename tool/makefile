@@ -2,7 +2,7 @@ SYS = Linux
 
 CC = g++
 DEBUG = -g
-ODM = ~/projects/opendims
+ODM = ..
 CFLAGS = -Wall -c $(DEBUG) -I $(ODM)
 LFLAGS = -Wall $(DEBUG)
 

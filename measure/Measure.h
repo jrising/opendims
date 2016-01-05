@@ -34,7 +34,7 @@ namespace openworld {
       return value;
     }
 
-    Indicator getIndicator() {
+    const Indicator& getIndicator() {
       return indicator;
     }
 

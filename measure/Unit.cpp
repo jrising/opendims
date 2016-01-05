@@ -25,7 +25,7 @@ Unit Unit::operator*(const Unit& b) const {
     for (map<Unit, double>::const_iterator it = factors.begin(); it != factors.end(); it++)
       newfactors[it->first] = it->second;
   }
-	
+
   if (!b.name.empty()) {
     if (newfactors.count(b) > 0)
       newfactors[b]++;
@@ -38,7 +38,7 @@ Unit Unit::operator*(const Unit& b) const {
       else
         newfactors[it->first] = it->second;
   }
-      
+
   // Remove all elements with power 0
   map<Unit, double> newfactors2;
   for (map<Unit, double>::const_iterator it = newfactors.begin(); it != newfactors.end(); it++)

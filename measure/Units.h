@@ -11,7 +11,8 @@ namespace openworld {
     static Unit individuals;
 
     static Unit s;
-    static Unit yr;
+    static Unit hr;
+    static Unit yr; // can't convert htis yet!
     /*static Unit min = GlobalUnit::add("min", Dims::s*60);
   static Unit hr = GlobalUnit::add("hr", min*60);
   static Unit day = GlobalUnit::add("day", hr*24);
@@ -45,6 +46,10 @@ namespace openworld {
         return &individuals;
       if (name == "s")
         return &s;
+      if (name == "hr") {
+        cout << "Returning a " << typeid(hr).name() << endl;
+        return &hr;
+      }
       if (name == "yr")
         return &yr;
       if (name == "m")

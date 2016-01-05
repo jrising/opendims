@@ -31,11 +31,11 @@ namespace openworld {
     }
 
   public:
-    string getName() {
+    string getName() const {
       return name;
     }
-		
-    Unit getUnit() const {
+
+    const Unit& getUnit() const {
       return unit;
     }
 
@@ -52,6 +52,23 @@ namespace openworld {
       return f*(max - min) + min;
     }
 
+    // Conversions
+    virtual bool isConvertible() const {
+      return false;
+    }
+
+    const Unit& getStandardUnit() const {
+      return unit.getStandardUnit();
+    }
+
+    virtual double convertToStandardIndicator(double from) const {
+      throw runtime_error("Cannot convert to standard indicator.");
+    }
+
+    virtual double convertFromStandardIndicator(double to) const {
+      throw runtime_error("Cannot convert to standard indicator.");
+    }
+
     friend ostream& operator<<(ostream& out, const Indicator& xx) {
       return out << xx.name << " [" << xx.unit << "]";
     }
@@ -65,7 +82,7 @@ namespace openworld {
     }
 
     // Mathematics
-		
+
     friend Indicator operator-(const Indicator& a) {
       return Indicator("-" + a.name, a.unit, -a.max, -a.min);
     }
@@ -75,19 +92,19 @@ namespace openworld {
         throw runtime_error("unit mismatch to +");
       return Indicator("(" + name + " + " + b.name + ")", unit, min + b.min, max + b.max);
     }
-		
+
     Indicator operator-(const Indicator& b) const {
       if (unit != b.unit)
         throw runtime_error("unit mismatch to -");
       return Indicator("(" + name + " - " + b.name + ")", unit, min - b.min, max - b.max);
     }
-		
+
     Indicator operator*(const Indicator& b) const {
       double newmin = std::min(min * b.min, std::min(min * b.max, b.min * max));
       double newmax = std::max(max * b.max, min * b.min);
       return Indicator(name + " " + b.name, unit * b.unit, newmin, newmax);
     }
-  
+
     Indicator operator/(const Indicator& b) const {
       double newmin = std::min(min / b.min, std::min(min / b.max, b.min / max));
       double newmax = std::max(max / b.max, min / b.min);
@@ -111,12 +128,35 @@ namespace openworld {
       return Indicator(name, unit, min, max);
     }
   };
-  
+
   // floating point value
   class LinearIndicator : public Indicator {
+  protected:
+    double standardShift;
+
   public:
-    LinearIndicator(string name, Unit unit, double min, double max)
-      : Indicator(name, unit, min, max) {
+  LinearIndicator(string name, Unit unit, double min, double max, double shift = 0)
+    : Indicator(name, unit, min, max) {
+      this->standardShift = shift;
+    }
+
+    LinearIndicator shiftedIndicator(double amount) {
+      if (amount < 0)
+        return LinearIndicator(name + to_string(amount), unit, min + amount, min + amount);
+      else
+        return LinearIndicator(name + "+" + to_string(amount), unit, min + amount, min + amount);
+    }
+
+    virtual bool isConvertible() const {
+      return true;
+    }
+
+    virtual double convertToStandardIndicator(double from) const {
+      return unit.convertToStandardUnits(from - standardShift);
+    }
+
+    virtual double convertfromStandardIndicator(double to) const {
+      return unit.convertFromStandardUnits(to) + standardShift;
     }
   };
 }

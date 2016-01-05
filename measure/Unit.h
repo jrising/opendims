@@ -19,24 +19,39 @@ namespace openworld {
   class Unit {
   protected:
     // typically only one of the following is used
+    // Option 1: a primary unit
     string name;
+    Unit* standardUnit;
+    double standardFactor;
+
+    // Option 2: a compound unit
     map<Unit, double> factors;
 
+    // For both: the dimension
     Dimensions dims;
-		
+
   public:
-    Unit(string name, Dimensions dims)
-      : dims(dims) {
+  Unit(string name, Dimensions dims)
+    : dims(dims) {
       this->name = name;
+      standardUnit = this;
+      standardFactor = 1;
     }
-    
-    Unit(map<Unit, double> factors, Dimensions dims)
-      : dims(dims) {
+
+  Unit(map<Unit, double> factors, Dimensions dims)
+    : dims(dims) {
       this->name = "";
       this->factors = factors;
     }
 
-    string toString() const {
+  Unit(string name, Dimensions dims, Unit* standardUnit, double standardFactor)
+    : dims(dims) {
+      this->name = name;
+      this->standardUnit = standardUnit;
+      this->standardFactor = standardFactor;
+    }
+
+    virtual string toString() const {
       stringstream ss;
       ss << *this;
       return ss.str();
@@ -68,13 +83,40 @@ namespace openworld {
       xx.outNoDims(out);
       return out << " [" << xx.dims << "]";
     }
-  
+
     string getName() {
       return name;
     }
-		
+
     Dimensions getDimensions() const {
       return dims;
+    }
+
+    // Conversions
+    const Unit& getStandardUnit() const {
+      return *standardUnit;
+    }
+
+    double convertToStandardUnits(double from) const {
+      if (!this->name.empty())
+        return standardFactor * from;
+      else {
+        for (map<Unit, double>::const_iterator it = this->factors.begin(); it != this->factors.end(); it++) {
+          from *= pow(it->first.convertToStandardUnits(1.0), it->second);
+        }
+        return from;
+      }
+    }
+
+    double convertFromStandardUnits(double to) const {
+      if (!this->name.empty())
+        return to / standardFactor;
+      else {
+        for (map<Unit, double>::const_iterator it = this->factors.begin(); it != this->factors.end(); it++) {
+          to *= pow(it->first.convertFromStandardUnits(1.0), -it->second);
+        }
+        return to;
+      }
     }
 
     // This function is needed to use as keys in a map
@@ -109,7 +151,7 @@ namespace openworld {
           cout << "A fails" << endl;
           return false;
         }
-        
+
       for (map<Unit, double>::const_iterator it = b.factors.begin(); it != b.factors.end(); it++)
         if (factors.count(it->first) == 0 || it->second != factors.find(it->first)->second) {
           cout << "B fails" << endl;
@@ -125,23 +167,23 @@ namespace openworld {
     }
 
     // Mathematics
-		
+
     friend Unit operator-(const Unit& a) {
-      return Unit("-" + a.name, a.dims);
+      return Unit("-" + a.name, a.dims, a.standardUnit, -a.standardFactor);
     }
 
     Unit operator+(const Unit& b) const {
       if (dims != b.dims)
         throw runtime_error("dimensions mismatch to +");
-      return Unit("(" + name + " + " + b.name + ")", dims);
+      return Unit("(" + name + " + " + b.name + ")", dims, standardUnit, standardFactor);
     }
-		
+
     Unit operator-(const Unit& b) const {
       if (dims != b.dims) {
         cout << dims << " <> " << b.dims << endl;
         throw runtime_error("dimensions mismatch to -");
       }
-      return Unit("(" + name + " - " + b.name + ")", dims);
+      return Unit("(" + name + " - " + b.name + ")", dims, standardUnit, standardFactor);
     }
 
     Unit operator*(const Unit& b) const;
@@ -151,10 +193,11 @@ namespace openworld {
       if (a == 1)
         return b.raisedTo(-1);
 
+      throw runtime_error("Cannot raise create unit ratio without numerator of 1.");
       // XXX: replace this with logic that constracts set of factors, which includes a factor for 'a'
-      ostringstream stringStream;
-      stringStream << a << "/(" << b.name << ")";
-      return Unit(stringStream.str(), Dims::none() / b.dims);
+      //ostringstream stringStream;
+      //stringStream << a << "/(" << b.name << ")";
+      //return Unit(stringStream.str(), Dims::none() / b.dims, 1.0 / *b.standardUnit, 1.0 / b.standardFactor);
     }
 
     // Modified from Dimensions.h
@@ -172,7 +215,7 @@ namespace openworld {
         if (newfactors.size() == 1 && newfactors.begin()->second == 1)
           return newfactors.begin()->first;
       }
-	
+
       return Unit(newfactors, dims.raisedTo(power));
     }
 

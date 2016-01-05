@@ -8,6 +8,8 @@ using namespace std;
 namespace openworld {
   class Inds {
   public:
+    static Indicator none;
+
     static Indicator lat;
     static Indicator lon;
 

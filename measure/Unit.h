@@ -42,6 +42,7 @@ namespace openworld {
     : dims(dims) {
       this->name = "";
       this->factors = factors;
+      standardUnit = NULL;
     }
 
   Unit(string name, Dimensions dims, Unit* standardUnit, double standardFactor)
@@ -93,8 +94,21 @@ namespace openworld {
     }
 
     // Conversions
-    const Unit& getStandardUnit() const {
-      return *standardUnit;
+    const Unit getStandardUnit() const {
+      if (standardUnit)
+        return *standardUnit;
+
+      bool initialized = false;
+      Unit result("dummy", Dims::none());
+      for (map<Unit, double>::const_iterator it = this->factors.begin(); it != this->factors.end(); it++) {
+        if (!initialized) {
+          result = it->first.getStandardUnit().raisedTo(it->second);
+          initialized = true;
+        } else
+          result = result * it->first.getStandardUnit().raisedTo(it->second);
+      }
+
+      return result;
     }
 
     double convertToStandardUnits(double from) const {

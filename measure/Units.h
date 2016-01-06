@@ -11,57 +11,76 @@ namespace openworld {
     static Unit individuals;
 
     static Unit s;
+    static Unit min;
     static Unit hr;
+    static Unit day;
     static Unit yr; // can't convert htis yet!
-    /*static Unit min = GlobalUnit::add("min", Dims::s*60);
-  static Unit hr = GlobalUnit::add("hr", min*60);
-  static Unit day = GlobalUnit::add("day", hr*24);
-  //static Unit month = GlobalUnit::add("month", Depends(theDate, day*365.25/12));
-  //static Unit year = GlobalUnit::add("year", Depends(theDate, day*365.25));*/
+    //static Unit month = GlobalUnit::add("month", Depends(theDate, day*365.25/12));
+    //static Unit year = GlobalUnit::add("year", Depends(theDate, day*365.25));*/
 
-  // space variables
+    // space variables
     static Unit m;
-  /*static Unit cm = GlobalUnit::add("cm", m/100);
-  static Unit mm = GlobalUnit::add("mm", m/1000);
-  static Unit km = GlobalUnit::add("km", m*1000);
-  static Unit inch = GlobalUnit::add("in", cm*2.54);
-  static IDisposable ft = GlobalUnit::add("ft", inch*12);
-  static IDisposable mi = GlobalUnit::add("mi", ft*5280);*/
+    static Unit cm;
+    static Unit mm;
+    static Unit km;
+    static Unit inch;
+    static Unit ft;
+    static Unit mi;
 
     static Unit ha;
 
-  // mass variables
+    // mass variables
     static Unit kg;
     static Unit mt;
 
-  // angles
+    // angles
     static Unit deg;
-    /*static Unit rad = GlobalUnit::get("rad");
-      static Unit deg = GlobalUnit::add("deg", rad * 180.0 / M_PI);*/
+    static Unit rad;
 
     static Unit* get(string name) {
       if (name == "none")
         return &none;
       if (name == "individuals")
         return &individuals;
+
       if (name == "s")
         return &s;
-      if (name == "hr") {
-        cout << "Returning a " << typeid(hr).name() << endl;
+      if (name == "min")
+        return &min;
+      if (name == "hr")
         return &hr;
-      }
+      if (name == "day")
+        return &day;
       if (name == "yr")
         return &yr;
+
       if (name == "m")
         return &m;
+      if (name == "cm")
+        return &cm;
+      if (name == "mm")
+        return &mm;
+      if (name == "km")
+        return &km;
+      if (name == "inch")
+        return &inch;
+      if (name == "ft")
+        return &ft;
+      if (name == "mi")
+        return &mi;
+
       if (name == "ha")
         return &ha;
+
       if (name == "kg")
         return &kg;
       if (name == "mt")
         return &mt;
+
       if (name == "deg")
         return &deg;
+      if (name == "rad")
+        return &rad;
 
       return NULL;
     }

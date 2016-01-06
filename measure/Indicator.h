@@ -57,7 +57,7 @@ namespace openworld {
       return false;
     }
 
-    const Unit& getStandardUnit() const {
+    const Unit getStandardUnit() const {
       return unit.getStandardUnit();
     }
 

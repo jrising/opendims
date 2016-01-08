@@ -21,7 +21,7 @@ namespace openworld {
       static Dimensions& sing = GlobalDimensions::get("time");
       return sing;
     }
-  
+
     static Dimensions& distance() {
       static Dimensions& sing = GlobalDimensions::get("distance");
       return sing;
@@ -34,6 +34,11 @@ namespace openworld {
 
     static Dimensions& angle() {
       static Dimensions& sing = GlobalDimensions::get("angle");
+      return sing;
+    }
+
+    static Dimensions& temperature() {
+      static Dimensions& sing = GlobalDimensions::get("temperature");
       return sing;
     }
   };

@@ -14,9 +14,11 @@ namespace openworld {
     static Unit min;
     static Unit hr;
     static Unit day;
+
     static Unit yr; // can't convert htis yet!
     //static Unit month = GlobalUnit::add("month", Depends(theDate, day*365.25/12));
     //static Unit year = GlobalUnit::add("year", Depends(theDate, day*365.25));*/
+    static Unit bceyr;
 
     // space variables
     static Unit m;
@@ -36,6 +38,10 @@ namespace openworld {
     // angles
     static Unit deg;
     static Unit rad;
+
+    // temperature
+    static Unit degC;
+    static Unit degF;
 
     static Unit* get(string name) {
       if (name == "none")
@@ -81,6 +87,12 @@ namespace openworld {
         return &deg;
       if (name == "rad")
         return &rad;
+
+      if (name == "degC")
+        return &degC;
+      if (name == "degF")
+        return &degF;
+
 
       return NULL;
     }

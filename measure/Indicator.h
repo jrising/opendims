@@ -23,11 +23,17 @@ namespace openworld {
     double min;
     double max;
 
-    Indicator(string name, Unit unit, double min, double max)
+    Indicator* standardIndicator;
+    double standardShift;
+
+    Indicator(string name, Unit unit, double min, double max, Indicator* indicator = NULL, double shift = 0)
       : unit(unit) {
       this->name = name;
       this->min = min;
       this->max = max;
+
+      this->standardIndicator = (indicator ? indicator : this);
+      this->standardShift = shift;
     }
 
   public:
@@ -53,20 +59,16 @@ namespace openworld {
     }
 
     // Conversions
-    virtual bool isConvertible() const {
-      return false;
-    }
-
-    const Unit getStandardUnit() const {
-      return unit.getStandardUnit();
+    virtual const Indicator getStandardIndicator() const {
+      return *standardIndicator;
     }
 
     virtual double convertToStandardIndicator(double from) const {
-      throw runtime_error("Cannot convert to standard indicator.");
+      return unit.convertToStandardUnits(from - standardShift);
     }
 
     virtual double convertFromStandardIndicator(double to) const {
-      throw runtime_error("Cannot convert to standard indicator.");
+      return unit.convertFromStandardUnits(to) + standardShift;
     }
 
     friend ostream& operator<<(ostream& out, const Indicator& xx) {
@@ -131,13 +133,9 @@ namespace openworld {
 
   // floating point value
   class LinearIndicator : public Indicator {
-  protected:
-    double standardShift;
-
   public:
-  LinearIndicator(string name, Unit unit, double min, double max, double shift = 0)
-    : Indicator(name, unit, min, max) {
-      this->standardShift = shift;
+  LinearIndicator(string name, Unit unit, double min, double max, LinearIndicator* indicator = NULL, double shift = 0)
+    : Indicator(name, unit, min, max, indicator, shift) {
     }
 
     LinearIndicator shiftedIndicator(double amount) {
@@ -145,18 +143,6 @@ namespace openworld {
         return LinearIndicator(name + to_string(amount), unit, min + amount, min + amount);
       else
         return LinearIndicator(name + "+" + to_string(amount), unit, min + amount, min + amount);
-    }
-
-    virtual bool isConvertible() const {
-      return true;
-    }
-
-    virtual double convertToStandardIndicator(double from) const {
-      return unit.convertToStandardUnits(from - standardShift);
-    }
-
-    virtual double convertfromStandardIndicator(double to) const {
-      return unit.convertFromStandardUnits(to) + standardShift;
     }
   };
 }

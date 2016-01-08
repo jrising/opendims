@@ -1,6 +1,10 @@
 #include <iostream>
 #include "parse.h"
+#include <measure/Measure.h>
 
+Measure readMeasureExpression(string expression);
+Indicator& readIndicator(string units);
+Measure convertMeasure(Measure& measure, Indicator& indicator);
 Quantity convertQuantity(Quantity quantity, const Unit& unit);
 
 int main(int argc, const char* argv[])
@@ -19,13 +23,45 @@ int main(int argc, const char* argv[])
 
   string units = argv[argc-1];
 
-  Quantity source = readCompoundExpression(expression);
-  Unit target = readCompoundExpression(units).getUnit();
+  bool pointOfNoReturn = false;
+  try {
+    Measure source = readMeasureExpression(expression);
+    pointOfNoReturn = true;
+    Indicator& target = readIndicator(units);
 
-  Quantity result = convertQuantity(source, target);
-  cout << result << endl;
+    Measure result = convertMeasure(source, target);
+    cout << result << endl;
+  } catch (invalid_argument ex) {
+    if (pointOfNoReturn)
+      throw ex;
+
+    Quantity source = readCompoundExpression(expression);
+    Unit target = readCompoundExpression(units).getUnit();
+
+    Quantity result = convertQuantity(source, target);
+    cout << result << endl;
+    return 0;
+  }
 
   return 0;
+}
+
+Indicator& readIndicator(string units) {
+  if (Indicator* ind = Inds::get(units))
+    return *ind;
+
+  throw invalid_argument("Unknown indicator: " + units);
+}
+
+Measure readMeasureExpression(string expression) {
+  if (expression.find(" ") != string::npos) {
+    string value = expression.substr(0, expression.find_first_of(' '));
+    string units = expression.substr(expression.find_first_of(' ') + 1);
+
+    return Measure(readValue(value), readIndicator(units));
+  }
+
+  return Measure(1, readIndicator(expression));
 }
 
 Quantity convertQuantity(Quantity quantity, const Unit& unit) {
@@ -43,5 +79,21 @@ Quantity convertQuantity(Quantity quantity, const Unit& unit) {
   double standardValue = sourceUnit.convertToStandardUnits(quantity.getValue());
   double targetValue = targetUnit.convertFromStandardUnits(standardValue);
   return Quantity(targetValue, unit);
+}
+
+Measure convertMeasure(Measure& measure, Indicator& indicator) {
+  // Check that dimensions match
+  if (measure.getIndicator().getUnit().getDimensions() != indicator.getUnit().getDimensions())
+    throw invalid_argument("Dimensions do not match!");
+
+  // Convert the units
+  const Indicator& sourceIndicator = measure.getIndicator();
+  Indicator& targetIndicator = indicator;
+  if (sourceIndicator.getStandardIndicator() != targetIndicator.getStandardIndicator())
+    throw invalid_argument("Indicators are not commesurate!");
+
+  double standardValue = sourceIndicator.convertToStandardIndicator(measure.getValue());
+  double targetValue = targetIndicator.convertFromStandardIndicator(standardValue);
+  return Measure(targetValue, indicator);
 }
 

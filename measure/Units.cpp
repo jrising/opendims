@@ -15,7 +15,9 @@ Unit Units::s = Unit("s", Dims::time());
 Unit Units::min = Unit("min", Dims::time(), &Units::s, 60);
 Unit Units::hr = Unit("hr", Dims::time(), &Units::s, 3600);
 Unit Units::day = Unit("hr", Dims::time(), &Units::s, 24*3600);
+
 Unit Units::yr = Unit("yr", Dims::time());
+Unit Units::bceyr = Unit("bceyr", Dims::time(), &Units::yr, -1);
 
 Unit Units::m = Unit("m", Dims::distance());
 Unit Units::cm = Unit("cm", Dims::distance(), &Units::m, .01);
@@ -31,4 +33,7 @@ Unit Units::kg = Unit("kg", Dims::mass());
 Unit Units::mt = Unit("mt", Dims::mass(), &Units::kg, 1000);
 
 Unit Units::deg = Unit("deg", Dims::angle());
-Unit Units::rad = Unit("rad", Dims::angle(), &Units::deg, 180.0 / M_PI);
+Unit Units::rad = Unit("rad", Dims::angle(), &Units::deg, M_PI / 180.0);
+
+Unit Units::degC = Unit("degC", Dims::temperature());
+Unit Units::degF = Unit("degF", Dims::temperature(), &Units::degC, 1 / 1.8);

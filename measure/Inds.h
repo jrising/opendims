@@ -10,18 +10,38 @@ namespace openworld {
   public:
     static Indicator none;
 
-    static Indicator lat;
-    static Indicator lon;
+    static LinearIndicator lat;
+    static LinearIndicator lon;
 
-    static Indicator unixtime;
+    static LinearIndicator unixtime;
+
+    static LinearIndicator ce;
+    static LinearIndicator bce;
+
+    static LinearIndicator kelvin;
+    static LinearIndicator celsius;
+    static LinearIndicator fahrenheit;
 
     static Indicator* get(string name) {
       if (name == "lat")
         return &lat;
       if (name == "lon")
         return &lon;
+
       if (name == "unixtime")
         return &unixtime;
+
+      if (name == "B.C.E.")
+        return &bce;
+      if (name == "C.E.")
+        return &ce;
+
+      if (name == "K")
+        return &kelvin;
+      if (name == "C")
+        return &celsius;
+      if (name == "F")
+        return &fahrenheit;
 
       return NULL;
     }

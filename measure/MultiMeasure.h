@@ -6,7 +6,7 @@
 #define MULTI_MEASURE_H
 
 #include "Indicator.h"
-#include "../dims/Quantity.h"
+#include "Quantity.h"
 #include <utility>
 
 namespace openworld {
@@ -17,12 +17,20 @@ namespace openworld {
     Indicator indicator;
 
   public:
-    MultiMeasure(unsigned length, double* values, Indicator indicator) 
+    MultiMeasure(unsigned length, double* values, Indicator indicator)
       : indicator(indicator) {
       this->length = length;
       this->values = values;
     }
-    
+
+    Measure operator[](unsigned ii) {
+      return Measure(values[ii], indicator);
+    }
+
+    unsigned getLength() {
+      return length;
+    }
+
     double getValue(unsigned ii) {
       return values[ii];
     }
@@ -45,7 +53,7 @@ namespace openworld {
     }
 
     // Mathematics
-		
+
     bool operator==(const MultiMeasure& b) const {
       if (indicator != b.indicator)
         throw runtime_error("Mismatched indicators in MultiMeasure == MultiMeasure");
